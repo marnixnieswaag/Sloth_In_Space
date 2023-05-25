@@ -22,6 +22,8 @@ class Ship():
         self.moving_up = False
         self.moving_down = False
 
+        self._layer = 1
+
     def update(self):
         """Update the ship's position based on the movement flag."""
         # Update the ship's y value, not the rect.

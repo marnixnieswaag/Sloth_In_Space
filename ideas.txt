@@ -1,8 +1,8 @@
-- Cut out Sloth image and make background transparant.
+- Cut out Sloth image and make background transparant. x
 
-- Make color of background black.
+- Make color of background black. x
 
-- Infinite scrolling background image with stars.
+- Infinite scrolling background image with stars. x
 
 - Asteroids as flying objects. 
 
