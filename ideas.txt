@@ -1,31 +1,32 @@
-- Sloth image uitknippen en achtergrond transparant maken.
+- Cut out Sloth image and make background transparant.
 
--  Achtergrond kleur zwart maken.
+- Make color of background black.
 
-- Infinite scrolling background met sterren.
+- Infinite scrolling background image with stars.
 
-- Asteroïden als vliegende objecten. 
+- Asteroids as flying objects. 
 
-- Hitpoints meegeven aan de asteroïden. 
+- Give hitpoints to Asteroids. 
 
-- Explosie effect wanneer de Ateroïden kapot worden geschoten.
+- Asteroids explode when destroyed.
 
-- Hitpoints van de Asteroïden nemen toe naarmate het level vorderd.
+- Hitpoints of asteroids increase during the game.
 
-- Tijdens het 'gewone' level heb je 3 levens.
+- During the game you have three lives, 
+they appear as heart icons on the screen.
 
-- vliegen en Asteroïden kapot maken levert punten op.
+- Flying en destroying ateroids will earn youn points.
 
-- Na het behalen van een bepaald aantal punten scrollt er een boss vanaf links het scherm in.
+- After aquiring a specific amount of points a boss will spawn from the right
+of the screen.
 
-- de boss vliegt willekeurig door de rechterhelft van het scherm en schiet projectielen die schade doen.
+- The boss moves a random pattern on the right side of the screen and shoots 
+missiles.
 
-- Wanneer de hitpoints van de boss naar 0 zijn gereduceerd wordt het 'normale' level hervat.
+- Right before the boss spawns, the asteroids will stop spawning.
 
-- Elke nieuwe boss die spawnt heeft meer hitpoints, beweegt sneller, en doet meer schade.
+- When the boss is defeated, the asteroids will continue to spawn.
 
-- Ideeën/doelen in Trello verwerken.
-
-
-
-
+- Each new boss will have: increased hitpoints, increased movement speed,
+increased shooting speed.
+ 
