@@ -47,7 +47,8 @@ class Sloth_In_Space:
             if event.type == pygame.QUIT:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                self._check_keydown_events(event)
+                    self._check_keydown_events(event)
+                    
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
 
@@ -60,8 +61,8 @@ class Sloth_In_Space:
         elif event.key == pygame.K_q:
             sys.exit()
         elif event.key == pygame.K_SPACE:
-            self._fire_bullet()
-    
+                self._fire_bullet()
+
     def _check_keyup_events(self, event):
         """Respond to key releases."""
         if event.key == pygame.K_UP:
