@@ -1,3 +1,5 @@
+- hold space and shoot automatic bullets.
+
 - Cut out Sloth image and make background transparant. x
 
 - Make color of background black. x
@@ -15,10 +17,12 @@
 - During the game you have three lives, 
 they appear as heart icons on the screen.
 
-- Flying en destroying ateroids will earn youn points.
+- Flying and destroying ateroids will earn youn points.
 
 - After aquiring a specific amount of points a boss will spawn from the right
 of the screen.
+
+-when the boss appears fully in the screen, display a hitpoints bar.
 
 - The boss moves a random pattern on the right side of the screen and shoots 
 missiles.

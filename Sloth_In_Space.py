@@ -5,6 +5,7 @@ import pygame
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
+from asteroid import Asteroid
 
 class Sloth_In_Space:
     """Overall class to manage game assets and behavior."""
@@ -28,20 +29,16 @@ class Sloth_In_Space:
  
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
+        self.asteroid = pygame.sprite.Group()
+        self._create_fleet()
 
     def run_game(self):
         """Start the main loop for the game."""
         while True:
             self._check_events()
             self.ship.update()
-            self.bullets.update()
-
-            # Get rid of bullets that have disappeared.
-            for bullet in self.bullets.copy():
-                if bullet.rect.left >=1200:
-                    self.bullets.remove(bullet)
+            self.update_bullets()
             self._update_screen()
-          
             self.clock.tick(60)
 
     def _check_events(self):
@@ -74,8 +71,19 @@ class Sloth_In_Space:
     
     def _fire_bullet(self):
         """Create a new bullet and add it to the bullet group."""
+        # Update bullet positions.
         new_bullet = Bullet(self)
         self.bullets.add(new_bullet)
+
+    def update_bullets(self):
+        """Update position of bullets and get rid of old bullets."""
+        # Update bullet positions.
+        self.bullets.update()
+
+         # Get rid of bullets that have disappeared.
+        for bullet in self.bullets.copy():
+            if bullet.rect.left >=1800:
+                self.bullets.remove(bullet)
 
     def _update_screen(self):
         """Update images on the screen, and flip to the screen."""
@@ -84,8 +92,29 @@ class Sloth_In_Space:
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.ship.blitme()
+        self.asteroid.draw(self.screen)
+
         pygame.display.flip()
 
+    def _create_fleet(self):
+        """Create the fleet of asteroids."""
+    # create an asteroid and keep adding asteroids until there's no room left
+
+    # Spacing between asteroids is one ateroid width. 
+        asteroid = Asteroid(self)
+        asteroid_width = asteroid.rect.width
+        current_x = (asteroid_width + 1200)
+
+        while current_x > (500 + 2 * asteroid_width):
+            self._create_asteroid(current_x)
+            current_x -= 2 * asteroid_width
+
+    def _create_asteroid(self, x_position):
+        """Create an asteroid and place it in the row."""
+        new_asteroid = Asteroid(self)
+        new_asteroid.x = x_position
+        new_asteroid.rect.x = x_position
+        self.asteroid.add(new_asteroid)
 
     def _scroll_background(self):
         """Makes the background scroll infinitely"""
