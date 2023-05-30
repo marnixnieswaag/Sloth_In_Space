@@ -38,6 +38,7 @@ class Sloth_In_Space:
             self._check_events()
             self.ship.update()
             self.update_bullets()
+            self._update_asteroids()
             self._update_screen()
             self.clock.tick(60)
 
@@ -85,6 +86,21 @@ class Sloth_In_Space:
         for bullet in self.bullets.copy():
             if bullet.rect.left >=1800:
                 self.bullets.remove(bullet)
+        
+        # Check for any bullets that have hit asteroids.
+        #   If so, get rid of the bullet and the asteroid.
+        collisions = pygame.sprite.groupcollide(
+            self.bullets, self.asteroid, True, True) 
+        
+        if not self.asteroid:
+            # Destroy existing bullets and create new fleet.
+            self.bullets.empty()
+            self._create_fleet()
+      
+    
+    def _update_asteroids(self):
+        """Update the position of all asteroids in the fleet."""
+        self.asteroid.update()
 
     def _update_screen(self):
         """Update images on the screen, and flip to the screen."""
@@ -94,6 +110,9 @@ class Sloth_In_Space:
             bullet.draw_bullet()
         self.ship.blitme()
         self.asteroid.draw(self.screen)
+        if not self.asteroid:
+            self._create_fleet
+
 
         pygame.display.flip()
 
@@ -103,18 +122,27 @@ class Sloth_In_Space:
 
     # Spacing between asteroids is one ateroid width. 
         asteroid = Asteroid(self)
-        asteroid_width = asteroid.rect.width
-        current_x = (asteroid_width + 1200)
+        asteroid_width, asteroid_height = asteroid.rect.size
 
-        while current_x > (500 + 2 * asteroid_width):
-            self._create_asteroid(current_x)
-            current_x -= 2 * asteroid_width
+        current_x, current_y = ((self.settings.screen_width * 2) - asteroid_width, asteroid_height + 40)
+        while current_y < ( 7 * asteroid_height):
+            while current_x > self.settings.screen_width:
+            
+                self._create_asteroid(current_x,current_y)
+                current_x -= 2 * asteroid_width
 
-    def _create_asteroid(self, x_position):
-        """Create an asteroid and place it in the row."""
+        # Finished a row; reset x value, and increment y value.
+            current_x += self.settings.screen_width
+            current_y += 2 * asteroid_height
+
+        
+
+    def _create_asteroid(self, x_position, y_position):
+        """Create an asteroid and place it in the fleet."""
         new_asteroid = Asteroid(self)
         new_asteroid.x = x_position
         new_asteroid.rect.x = x_position
+        new_asteroid.rect.y = y_position
         self.asteroid.add(new_asteroid)
 
     def _scroll_background(self):
@@ -127,7 +155,7 @@ class Sloth_In_Space:
             pygame.draw.rect(self.screen, (0, 0, 0), self.bg_rect, 1)
 
         #scroll background
-        self.scroll -= 5
+        self.scroll -= 2
 
         #reset scroll
         if abs(self.scroll) > self.bg_width:

@@ -20,3 +20,6 @@ class Settings:
         self.bullet_height = 4
         self.bullet_color = (255, 0, 0)
         self.bullets_allowed = 3
+
+        # Asteroid settings
+        self.asteroid_speed = 2.0

@@ -1,3 +1,4 @@
+from typing import Any
 import pygame
 from pygame.sprite import Sprite
 
@@ -8,6 +9,7 @@ class Asteroid(Sprite):
         """Initialize the alien and set its starting position."""
         super().__init__()
         self.screen = sis_game.screen
+        self.settings = sis_game.settings
 
         # Load the asteroid image and set its starting position.
         self.image = pygame.image.load('images/asteroid.bmp')
@@ -19,3 +21,8 @@ class Asteroid(Sprite):
 
         # Store the alien's exact horizontal position.
         self.x = float(self.rect.x)
+    
+    def update(self):
+        """Move the asteroid to the left."""
+        self.x -= self.settings.asteroid_speed
+        self.rect.x = self.x
