@@ -1,9 +1,11 @@
 import sys
+from time import sleep
 import math
 import pygame
 import random
 
 from settings import Settings
+from game_stats import GameStats
 from ship import Ship
 from bullet import Bullet
 from asteroid import Asteroid
@@ -21,8 +23,15 @@ class Sloth_In_Space:
         self.settings.screen_width = self.screen.get_rect().width
         self.settings.screen_height = self.screen.get_rect().height
         pygame.display.set_caption("Sloth In Space")
-        self.bg_width = self.settings.bg.get_width()
-        self.bg_rect = self.settings.bg.get_rect()
+
+        # Create an instance to store game statisctics.
+        self.stats = GameStats(self)
+
+        # Scale background to screensize
+        self.bg = pygame.image.load("images/space_background.png").convert()
+        self.bg = pygame.transform.smoothscale(self.bg, self.screen.get_size())
+        self.bg_width = self.bg.get_width()
+        self.bg_rect = self.bg.get_rect()
 
         #define game variables 
         self.scroll = 0
@@ -30,16 +39,22 @@ class Sloth_In_Space:
  
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
-        self.asteroid = pygame.sprite.Group()
+        self.asteroids = pygame.sprite.Group()
         self._create_fleet()
+
+        #Start sloth in space in an active state.
+        self.game_active = True
 
     def run_game(self):
         """Start the main loop for the game."""
         while True:
             self._check_events()
-            self.ship.update()
-            self.update_bullets()
-            self._update_asteroids()
+
+            if self.game_active:
+                self.ship.update()
+                self.update_bullets()
+                self._update_asteroids()
+
             self._update_screen()
             self.clock.tick(60)
 
@@ -63,7 +78,7 @@ class Sloth_In_Space:
         elif event.key == pygame.K_q:
             sys.exit()
         elif event.key == pygame.K_SPACE:
-                self._fire_bullet()
+            self._fire_bullet()
 
     def _check_keyup_events(self, event):
         """Respond to key releases."""
@@ -71,6 +86,14 @@ class Sloth_In_Space:
             self.ship.moving_up = False
         elif event.key == pygame.K_DOWN:
             self.ship.moving_down = False
+    
+    def _check_asteroids_left(self):
+        """Check if any asteroids have reached the left of the screen"""
+        for asteroid in self.asteroids.sprites():
+            if asteroid.rect.left <= 0:
+                # Treat this the same as if the ship got hit.
+                self._ship_hit()
+                break
     
     def _fire_bullet(self):
         """Create a new bullet and add it to the bullet group."""
@@ -91,15 +114,27 @@ class Sloth_In_Space:
         # Check for any bullets that have hit asteroids.
         #   If so, get rid of the bullet and the asteroid.
         collisions = pygame.sprite.groupcollide(
-            self.bullets, self.asteroid, True, True) 
+            self.bullets, self.asteroids, True, True) 
         
         self.settings.ship_speed += len(collisions) / 500
         self.settings.asteroid_speed += len(collisions) / 100
       
+        if not self.asteroids:
+            # Destroy existing bullets and create new fleet.
+            self.bullets.empty()
+            self._create_fleet()
     
     def _update_asteroids(self):
         """Update the position of all asteroids in the fleet."""
-        self.asteroid.update()
+        self.asteroids.update()
+
+        # Look for asteroid-ship collisions.
+        if pygame.sprite.spritecollideany(self.ship, self.asteroids):
+            print("Ship hit!!!")
+        
+        # look for asteroids hitting the left of the screen.
+        self._check_asteroids_left()
+            
 
     def _update_screen(self):
         """Update images on the screen, and flip to the screen."""
@@ -108,19 +143,25 @@ class Sloth_In_Space:
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.ship.blitme()
-        self.asteroid.draw(self.screen)
-        self._create_fleet()
+        self.asteroids.draw(self.screen)
         pygame.display.flip()
 
     def _create_fleet(self):
         """Create the fleet of asteroids."""
     
-        while len(self.asteroid.sprites()) < 40:
-
+        while len(self.asteroids.sprites()) < self.settings.number_of_asteroids: 
             current_x = random.randint(self.settings.screen_width , (self.settings.screen_width * 2) - 120)
             current_y = random.randint(20, self.settings.screen_height - 120)
     
             self._create_asteroid(current_x, current_y)
+        
+      
+          
+
+        
+    
+
+
            
 
     def _create_asteroid(self, x_position, y_position):
@@ -129,14 +170,32 @@ class Sloth_In_Space:
         new_asteroid.x = x_position
         new_asteroid.rect.x = x_position
         new_asteroid.rect.y = y_position
-        self.asteroid.add(new_asteroid)
+        self.asteroids.add(new_asteroid)
+
+    def _ship_hit(self):
+        """Respond to the ship being hit by an asteroid."""
+        if self.stats.ships_left > 0:
+            # Decrement ships_left.
+            self.stats.ships_left -= 1
+
+            # Get rid of any remaining bullets and aliens.
+            self.bullets.empty()
+            self.asteroids.empty()
+
+            # Create a new fleet and center the ship.
+            self.ship.center_ship()
+
+            # Pause
+            sleep(0.5)
+        else:
+            self.game_active = False
 
     def _scroll_background(self):
         """Makes the background scroll infinitely"""
 
         # Draw scrolling background
         for i in range(0, self.tiles):
-            self.screen.blit(self.settings.bg, (i * self.bg_width + self.scroll, 0))
+            self.screen.blit(self.bg, (i * self.bg_width + self.scroll, 0))
             self.bg_rect.x = i * self.bg_width + self.scroll
             pygame.draw.rect(self.screen, (0, 0, 0), self.bg_rect, 1)
 
