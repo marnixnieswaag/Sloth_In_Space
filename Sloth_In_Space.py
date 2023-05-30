@@ -1,6 +1,7 @@
 import sys
 import math
 import pygame
+import random
 
 from settings import Settings
 from ship import Ship
@@ -92,10 +93,8 @@ class Sloth_In_Space:
         collisions = pygame.sprite.groupcollide(
             self.bullets, self.asteroid, True, True) 
         
-        if not self.asteroid:
-            # Destroy existing bullets and create new fleet.
-            self.bullets.empty()
-            self._create_fleet()
+        self.settings.ship_speed += len(collisions) / 500
+        self.settings.asteroid_speed += len(collisions) / 100
       
     
     def _update_asteroids(self):
@@ -110,32 +109,19 @@ class Sloth_In_Space:
             bullet.draw_bullet()
         self.ship.blitme()
         self.asteroid.draw(self.screen)
-        if not self.asteroid:
-            self._create_fleet
-
-
+        self._create_fleet()
         pygame.display.flip()
 
     def _create_fleet(self):
         """Create the fleet of asteroids."""
-    # create an asteroid and keep adding asteroids until there's no room left
+    
+        while len(self.asteroid.sprites()) < 40:
 
-    # Spacing between asteroids is one ateroid width. 
-        asteroid = Asteroid(self)
-        asteroid_width, asteroid_height = asteroid.rect.size
-
-        current_x, current_y = ((self.settings.screen_width * 2) - asteroid_width, asteroid_height + 40)
-        while current_y < ( 7 * asteroid_height):
-            while current_x > self.settings.screen_width:
-            
-                self._create_asteroid(current_x,current_y)
-                current_x -= 2 * asteroid_width
-
-        # Finished a row; reset x value, and increment y value.
-            current_x += self.settings.screen_width
-            current_y += 2 * asteroid_height
-
-        
+            current_x = random.randint(self.settings.screen_width , (self.settings.screen_width * 2) - 120)
+            current_y = random.randint(20, self.settings.screen_height - 120)
+    
+            self._create_asteroid(current_x, current_y)
+           
 
     def _create_asteroid(self, x_position, y_position):
         """Create an asteroid and place it in the fleet."""

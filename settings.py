@@ -22,4 +22,4 @@ class Settings:
         self.bullets_allowed = 3
 
         # Asteroid settings
-        self.asteroid_speed = 2.0
+        self.asteroid_speed = 1 
