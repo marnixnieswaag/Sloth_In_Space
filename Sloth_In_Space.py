@@ -6,6 +6,7 @@ import random
 
 from settings import Settings
 from game_stats import GameStats
+from scoreboard import Scoreboard
 from button import Button
 from ship import Ship
 from bullet import Bullet
@@ -26,7 +27,9 @@ class Sloth_In_Space:
         pygame.display.set_caption("Sloth In Space")
 
         # Create an instance to store game statisctics.
+        #   and create a scoreboard.
         self.stats = GameStats(self)
+        self.sb = Scoreboard(self)
 
         # Scale background to screensize
         self.bg = pygame.image.load("images/space_background.png").convert()
@@ -41,7 +44,6 @@ class Sloth_In_Space:
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
-        self._create_fleet()
 
         #Start sloth in space in an inactive state.
         self.game_active = False
@@ -82,7 +84,9 @@ class Sloth_In_Space:
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.game_active:
             # Reset the game statistics
+            self.settings.initialize_dynamic_settings()
             self.stats.reset_stats()
+            self.sb.prep_score()
             self.game_active = True
 
             # Get rid of any remaining bullets and asteroids.
@@ -125,7 +129,8 @@ class Sloth_In_Space:
         """Create a new bullet and add it to the bullet group."""
         # Update bullet positions.
         new_bullet = Bullet(self)
-        self.bullets.add(new_bullet)
+        if len(self.bullets) < self.settings.bullets_allowed: 
+            self.bullets.add(new_bullet)
 
     def update_bullets(self):
         """Update position of bullets and get rid of old bullets."""
@@ -136,19 +141,26 @@ class Sloth_In_Space:
         for bullet in self.bullets.copy():
             if bullet.rect.left >=1800:
                 self.bullets.remove(bullet)
-        
-        # Check for any bullets that have hit asteroids.
-        #   If so, get rid of the bullet and the asteroid.
+
+        self._check_bullet_asteroid_collisions()
+
+    def _check_bullet_asteroid_collisions(self):
+        """Respond to bullet-asteroid collisions."""
+        # Remove any bullets and aliens that have collided.
         collisions = pygame.sprite.groupcollide(
             self.bullets, self.asteroids, True, True) 
         
-        self.settings.ship_speed += len(collisions) / 500
-        self.settings.asteroid_speed += len(collisions) / 100
+        if collisions:
+            for asteroids in collisions.values():
+                self.stats.score += self.settings.asteroid_points * len(asteroids)
+            self.sb.prep_score()
       
         if not self.asteroids:
             # Destroy existing bullets and create new fleet.
             self.bullets.empty()
             self._create_fleet()
+            self.settings.increase_speed()
+            self.settings.increase_asteroids
     
     def _update_asteroids(self):
         """Update the position of all asteroids in the fleet."""
@@ -170,6 +182,9 @@ class Sloth_In_Space:
             bullet.draw_bullet()
         self.ship.blitme()
         self.asteroids.draw(self.screen)
+
+        # Draw the score information.
+        self.sb.show_score()
 
         # Draw the play button if the game is inactive.
         if not self.game_active:
@@ -237,6 +252,7 @@ class Sloth_In_Space:
         #reset scroll
         if abs(self.scroll) > self.bg_width:
             self.scroll = 0
+
 
 if __name__ == '__main__':
     # Make a game instance, and run the game.
