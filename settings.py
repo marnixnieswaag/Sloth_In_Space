@@ -27,6 +27,7 @@ class Settings:
        
         # How quickly the game speeds up
         self.speedup_scale = 1.1
+        self.score_scale = 1.5
 
         #how quickly the number of asteroids increase
         self.number_up_scale = 1
@@ -45,10 +46,12 @@ class Settings:
 
     
     def increase_speed(self):
-        """Increase speed settings."""
+        """Increase speed settings and asteroid point values."""
         self.ship_speed *= self.speedup_scale
         self.bullet_speed *= self.speedup_scale
         self.asteroid_speed *= self.speedup_scale
+
+        self.asteroid_points = int(self.asteroid_points * self.score_scale)
 
     def increase_asteroids(self):
         """Increase amount of asteroids."""

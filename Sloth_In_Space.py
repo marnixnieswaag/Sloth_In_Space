@@ -87,6 +87,8 @@ class Sloth_In_Space:
             self.settings.initialize_dynamic_settings()
             self.stats.reset_stats()
             self.sb.prep_score()
+            self.sb.prep_level()
+            self.sb.prep_ships()
             self.game_active = True
 
             # Get rid of any remaining bullets and asteroids.
@@ -154,6 +156,7 @@ class Sloth_In_Space:
             for asteroids in collisions.values():
                 self.stats.score += self.settings.asteroid_points * len(asteroids)
             self.sb.prep_score()
+            self.sb.check_high_score()
       
         if not self.asteroids:
             # Destroy existing bullets and create new fleet.
@@ -161,6 +164,10 @@ class Sloth_In_Space:
             self._create_fleet()
             self.settings.increase_speed()
             self.settings.increase_asteroids
+
+            # Increase level.
+            self.stats.level += 1
+            self.sb.prep_level()
     
     def _update_asteroids(self):
         """Update the position of all asteroids in the fleet."""
@@ -201,15 +208,6 @@ class Sloth_In_Space:
     
             self._create_asteroid(current_x, current_y)
         
-      
-          
-
-        
-    
-
-
-           
-
     def _create_asteroid(self, x_position, y_position):
         """Create an asteroid and place it in the fleet."""
         new_asteroid = Asteroid(self)
@@ -221,16 +219,14 @@ class Sloth_In_Space:
     def _ship_hit(self):
         """Respond to the ship being hit by an asteroid."""
         if self.stats.ships_left > 0:
-            # Decrement ships_left.
+            # Decrement ships_left and update scoreboard.
             self.stats.ships_left -= 1
-
+            self.sb.prep_ships()
             # Get rid of any remaining bullets and aliens.
             self.bullets.empty()
             self.asteroids.empty()
-
             # Create a new fleet and center the ship.
             self.ship.center_ship()
-
             # Pause
             sleep(0.5)
         else:
