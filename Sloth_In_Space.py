@@ -11,6 +11,7 @@ from button import Button
 from ship import Ship
 from bullet import Bullet
 from asteroid import Asteroid
+from boss_ship import Boss_Ship
 
 class Sloth_In_Space:
     """Overall class to manage game assets and behavior."""
@@ -44,6 +45,7 @@ class Sloth_In_Space:
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
+        self.boss_ship = Boss_Ship(self)
 
         #Start sloth in space in an inactive state.
         self.game_active = False
@@ -54,15 +56,17 @@ class Sloth_In_Space:
     def run_game(self):
         """Start the main loop for the game."""
         while True:
+            self.clock.tick(60)
             self._check_events()
 
             if self.game_active:
+
                 self.ship.update()
+                self.boss_ship.update()
                 self.update_bullets()
                 self._update_asteroids()
 
             self._update_screen()
-            self.clock.tick(60)
 
     def _check_events(self):
         """Respond to keypresses and mouse events."""
@@ -124,7 +128,7 @@ class Sloth_In_Space:
         for asteroid in self.asteroids.sprites():
             if asteroid.rect.left <= 0:
                 # Treat this the same as if the ship got hit.
-                self._ship_hit()
+                self._ship_hit(asteroid)
                 break
     
     def _fire_bullet(self):
@@ -157,25 +161,36 @@ class Sloth_In_Space:
                 self.stats.score += self.settings.asteroid_points * len(asteroids)
             self.sb.prep_score()
             self.sb.check_high_score()
-      
-        if not self.asteroids:
-            # Destroy existing bullets and create new fleet.
-            self.bullets.empty()
-            self._create_fleet()
-            self.settings.increase_speed()
-            self.settings.increase_asteroids
 
-            # Increase level.
-            self.stats.level += 1
-            self.sb.prep_level()
+        # Stops spawning the asteroids and 
+        # let the boss ship enter the screen every 10th level
+            if not self.asteroids and self.stats.level % 3 == 0:   
+                self.boss_ship._enter_screen()
+                # Destroy existing bullets and create new fleet.
+                self.bullets.empty()
+                self.stats.level += 1
+                self.sb.prep_level()
+                self.settings.increase_speed()
+
+            elif not self.asteroids:
+                
+                self.bullets.empty()
+                self.stats.level += 1
+                self.sb.prep_level()
+                self.settings.increase_speed()
+                self._create_fleet()
+               
+        
+               
     
     def _update_asteroids(self):
         """Update the position of all asteroids in the fleet."""
         self.asteroids.update()
 
         # Look for asteroid-ship collisions.
-        if pygame.sprite.spritecollideany(self.ship, self.asteroids):
-            self._ship_hit()
+        collided_asteroid = pygame.sprite.spritecollideany(self.ship, self.asteroids)
+        if collided_asteroid:
+            self._ship_hit(collided_asteroid)
         
         # look for asteroids hitting the left of the screen.
         self._check_asteroids_left()
@@ -188,6 +203,7 @@ class Sloth_In_Space:
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.ship.blitme()
+        self.boss_ship.blitme()
         self.asteroids.draw(self.screen)
 
         # Draw the score information.
@@ -201,7 +217,6 @@ class Sloth_In_Space:
 
     def _create_fleet(self):
         """Create the fleet of asteroids."""
-    
         while len(self.asteroids.sprites()) < self.settings.number_of_asteroids: 
             current_x = random.randint(self.settings.screen_width , (self.settings.screen_width * 2) - 120)
             current_y = random.randint(20, self.settings.screen_height - 120)
@@ -216,19 +231,15 @@ class Sloth_In_Space:
         new_asteroid.rect.y = y_position
         self.asteroids.add(new_asteroid)
 
-    def _ship_hit(self):
+    def _ship_hit(self, asteroid):
         """Respond to the ship being hit by an asteroid."""
         if self.stats.ships_left > 0:
             # Decrement ships_left and update scoreboard.
             self.stats.ships_left -= 1
             self.sb.prep_ships()
-            # Get rid of any remaining bullets and aliens.
-            self.bullets.empty()
-            self.asteroids.empty()
-            # Create a new fleet and center the ship.
-            self.ship.center_ship()
-            # Pause
-            sleep(0.5)
+            self.asteroids.remove(asteroid)
+          
+          
         else:
             self.game_active = False
             pygame.mouse.set_visible(True)
