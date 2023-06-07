@@ -18,13 +18,13 @@ class Sloth_In_Space:
 
     def __init__(self):
         """Initialize the game, and create game resources"""
+        super().__init__()
         pygame.init()
         self.clock = pygame.time.Clock()
         self.settings = Settings()
-
         self.screen = pygame.display.set_mode ((0, 0), pygame.FULLSCREEN)
-        self.settings.screen_width = self.screen.get_rect().width
-        self.settings.screen_height = self.screen.get_rect().height
+        self.screen_width = self.screen.get_rect().width
+        self.screen_height = self.screen.get_rect().height
         pygame.display.set_caption("Sloth In Space")
 
         # Create an instance to store game statisctics.
@@ -40,7 +40,7 @@ class Sloth_In_Space:
 
         #define game variables 
         self.scroll = 0
-        self.tiles = math.ceil(self.settings.screen_width / self.bg_width) + 1
+        self.tiles = math.ceil(self.screen_width / self.bg_width) + 1
  
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
@@ -158,13 +158,14 @@ class Sloth_In_Space:
         
         if collisions:
             for asteroids in collisions.values():
-                self.stats.score += self.settings.asteroid_points * len(asteroids)
+                self.stats.score += self.settings.asteroid_points \
+                      * len(asteroids)
             self.sb.prep_score()
             self.sb.check_high_score()
 
         # Stops spawning the asteroids and 
         # let the boss ship enter the screen every 10th level
-            if not self.asteroids and self.stats.level % 3 == 0:   
+            if not self.asteroids and self.stats.level % 1 == 0:   
                 self.boss_ship._enter_screen()
                 # Destroy existing bullets and create new fleet.
                 self.bullets.empty()
@@ -205,7 +206,7 @@ class Sloth_In_Space:
         self.ship.blitme()
         self.boss_ship.blitme()
         self.asteroids.draw(self.screen)
-
+     
         # Draw the score information.
         self.sb.show_score()
 
@@ -218,8 +219,8 @@ class Sloth_In_Space:
     def _create_fleet(self):
         """Create the fleet of asteroids."""
         while len(self.asteroids.sprites()) < self.settings.number_of_asteroids: 
-            current_x = random.randint(self.settings.screen_width , (self.settings.screen_width * 2) - 120)
-            current_y = random.randint(20, self.settings.screen_height - 120)
+            current_x = random.randint(self.screen_width , (self.screen_width * 2) - 120)
+            current_y = random.randint(20, self.screen_height - 120)
     
             self._create_asteroid(current_x, current_y)
         
