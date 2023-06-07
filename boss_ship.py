@@ -19,19 +19,16 @@ class Boss_Ship(Sprite):
         # Load the boss ship's image and get it's rect
         self.image = pygame.image.load('images/boss_ship.bmp')
         self.rect = self.image.get_rect()
-
+        self.width = self.rect.width
+        self.height = self.rect.height
         # Start each new ship at the left outside of the screen.
         self.rect.midleft = self.screen_rect.midright
         # Store a float for the ship's exact vertical position.
-        self.x = float(self.rect.left)
-        self.y = float(self.rect.top)
+        self.x = float(self.rect.x)
+        self.y = float(self.rect.y)
 
-        # Starting speed
-        self.speed_x = 5
-        self.speed_y = 4
-
-        # Creating a variable for direction
-        self.direction = 1
+        self.x_speed = 2.5
+        self.y_speed = 2.5
 
         self.enter_screen = False
         self.move_random = False
@@ -41,46 +38,22 @@ class Boss_Ship(Sprite):
         if self.enter_screen:
             self.x -= 2
         
-        if self.rect.left == (self.screen_rect.centerx + 20) :
+        if self.rect.right == (self.screen_rect.right - 100) :
             self.enter_screen = False
             self._move_random()
         
         if self.move_random:
 
-            # Changing the direction and x,y coordinate
-            if self.rect.left <= self.screen_rect.centerx or \
-                self.rect.right >= self.screen_rect.right :
-                    self.direction *= -1
-                    self.speed_x = randint(0, 8) * self.direction
-                    self.speed_y = randint(0, 8) * self.direction
+            if (self.x + self.width >= self.screen_width) or \
+                (self.x  <= (self.screen_width/2)):
+                self.x_speed = -self.x_speed
+            
+            if (self.y + self.height >= self.screen_height) or (self.y <= 0):
+                self.y_speed =  -self.y_speed
+        
+            self.x += self.x_speed
+            self.y += self.y_speed
 
-                # Changing the value if speed_x
-                # and speed_y both are zero
-                    if self.speed_x == 0 and self.speed_y == 0:
-                        self.speed_x = randint(2, 8) * self.direction
-                        self.speed_y = randint(2, 8) * self.direction
-
-            # Changing the direction and x,y coordinate
-            # of the object if the coordinate of top
-            # side is less than equal to 20 or bottom side coordinate
-            # is greater than equal to 700
-            if self.rect.top <= self.screen_rect.top or self.rect.bottom  \
-                >= self.screen_rect.bottom:
-                self.direction *= -1
-                speed_x = randint(0, 8) * self.direction
-                speed_y = randint(0, 8) * self.direction
-    
-                # Changing the value if speed_x
-                # and speed_y both are zero
-                if speed_x == 0 and speed_y == 0:
-                    speed_x = randint(2, 8) * self.direction
-                    speed_y = randint(2, 8) * self.direction
-    
-
-            # Adding speed_x and speed_y
-            # in left and top coordinates of object
-            self.x += self.speed_x
-            self.y += self.speed_y
 
 
         self.rect.x = self.x
