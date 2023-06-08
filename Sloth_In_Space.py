@@ -206,7 +206,7 @@ class Sloth_In_Space:
         self.ship.blitme()
         self.boss_ship.blitme()
         self.asteroids.draw(self.screen)
-     
+        self.boss_ship._draw_hp_bar()
         # Draw the score information.
         self.sb.show_score()
 

@@ -32,6 +32,9 @@ class Boss_Ship(Sprite):
 
         self.enter_screen = False
         self.move_random = False
+        self.draw_hp_bar = False
+
+        self.health = 500
 
     def update(self):
         """Update the boss ship's position based on the movement flag."""
@@ -43,6 +46,7 @@ class Boss_Ship(Sprite):
             self._move_random()
         
         if self.move_random:
+            self.draw_hp_bar = True
 
             if (self.x + self.width >= self.screen_width) or \
                 (self.x  <= (self.screen_width/2)):
@@ -53,7 +57,6 @@ class Boss_Ship(Sprite):
         
             self.x += self.x_speed
             self.y += self.y_speed
-
 
 
         self.rect.x = self.x
@@ -69,6 +72,14 @@ class Boss_Ship(Sprite):
        
         """Moves the boss ship in a random pattern."""
         self.move_random = True
+
+    def _draw_hp_bar(self):
+        if self.draw_hp_bar:
+
+            RED = (255, 0, 0)
+            GREEN = (0, 255, 0)
+            pygame.draw.rect(self.screen,RED,(525,70,500,10))
+            pygame.draw.rect(self.screen,GREEN,(525,70,self.health,10))
 
     def blitme(self):
         """Draw the boss ship at its current location."""
