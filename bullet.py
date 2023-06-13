@@ -15,6 +15,7 @@ class Bullet(Sprite):
         self.rect = pygame.Rect(0, 0, self.settings.bullet_width,
             self.settings.bullet_height)
         self.rect.midleft = sis_game.ship.rect.midright
+        
 
         # Calibrate starting point of bullet
 

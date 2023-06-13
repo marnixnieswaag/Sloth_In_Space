@@ -45,8 +45,8 @@ class Sloth_In_Space:
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
-        self.boss_ship = Boss_Ship(self)
-
+        self.boss_ship = Boss_Ship(self,self.settings)
+        self.boss_ships = pygame.sprite.Group()
         #Start sloth in space in an inactive state.
         self.game_active = False
 
@@ -149,6 +149,7 @@ class Sloth_In_Space:
                 self.bullets.remove(bullet)
 
         self._check_bullet_asteroid_collisions()
+        self._check_bullet_boss_ship_collisions()
 
     def _check_bullet_asteroid_collisions(self):
         """Respond to bullet-asteroid collisions."""
@@ -163,8 +164,8 @@ class Sloth_In_Space:
             self.sb.prep_score()
             self.sb.check_high_score()
 
-        # Stops spawning the asteroids and 
-        # let the boss ship enter the screen every 10th level
+            # Stops spawning the asteroids and 
+            # let the boss ship enter the screen every 10th level
             if not self.asteroids and self.stats.level % 1 == 0:   
                 self.boss_ship._enter_screen()
                 # Destroy existing bullets and create new fleet.
@@ -174,7 +175,7 @@ class Sloth_In_Space:
                 self.settings.increase_speed()
 
             elif not self.asteroids:
-                
+                    
                 self.bullets.empty()
                 self.stats.level += 1
                 self.sb.prep_level()
@@ -182,8 +183,25 @@ class Sloth_In_Space:
                 self._create_fleet()
                
         
-               
-    
+    def _check_bullet_boss_ship_collisions(self):
+        """Checks for collisions between the player ship's bullets and 
+        the boss ship"""
+        if self.boss_ship.move_random:
+
+            col = pygame.sprite.spritecollideany(self.boss_ship, self.bullets)
+            if col:
+                self.bullets.remove(col)
+                self.boss_ship.health -= 100
+            
+                if self.boss_ship.health <= 0:
+                    self.bullets.empty()
+                    self.stats.level += 1
+                    self.sb.prep_level()
+                    self.settings.increase_speed()
+                    self._create_fleet()
+                    self.boss_ship._respawn()
+        # gain a level after the boss ship's destroyed
+     
     def _update_asteroids(self):
         """Update the position of all asteroids in the fleet."""
         self.asteroids.update()
@@ -206,9 +224,11 @@ class Sloth_In_Space:
         self.ship.blitme()
         self.boss_ship.blitme()
         self.asteroids.draw(self.screen)
-        self.boss_ship._draw_hp_bar()
         # Draw the score information.
         self.sb.show_score()
+
+        if self.boss_ship.move_random:
+            self.boss_ship._draw_hp_bar()
 
         # Draw the play button if the game is inactive.
         if not self.game_active:

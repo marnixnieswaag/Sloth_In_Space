@@ -30,6 +30,9 @@ class Settings:
         #how quickly the number of asteroids increase
         self.number_up_scale = 1
 
+        #Boss ship health
+        self.boss_ship_health = 500
+
         self.initialize_dynamic_settings()
 
     def initialize_dynamic_settings(self):
