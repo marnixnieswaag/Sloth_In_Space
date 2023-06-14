@@ -9,10 +9,10 @@ from asteroid import Asteroid
 class Boss_Ship(Sprite):
     """A Class to manage the boss ship."""
 
-    def __init__(self, sis_game, settings : Settings):
+    def __init__(self, sis_game):
         """Initialize the boss ship and it's starting postition."""
         self.sis_game = sis_game
-        self.settings = settings
+        self.settings = sis_game.settings
         self.stats = GameStats(self)
         self.sb = Scoreboard
         self.movement = False
@@ -32,8 +32,8 @@ class Boss_Ship(Sprite):
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
         
-        self.x_speed = 2.5
-        self.y_speed = 2.5
+        self.x_speed = 3
+        self.y_speed = 3
 
         self.enter_screen = False
         self.move_random = False

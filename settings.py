@@ -19,6 +19,14 @@ class Settings:
         self.bullet_color = (255, 0, 0)
         self.bullets_allowed = 3
         
+        # Boss bullets settings
+        self.boss_bullet_color = (0, 255, 0)
+        self.boss_bullet_speed = 6.0
+        self.boss_bullet_width = 10
+        self.boss_bullet_height = 4
+        self.boss_bullet_speed = 6.0
+        self.boss_bullets_allowed = 5
+
         # Asteroid settings
         self.asteroid_speed = 2.0
         self.number_of_asteroids = 5
@@ -30,9 +38,9 @@ class Settings:
         #how quickly the number of asteroids increase
         self.number_up_scale = 1
 
-        #Boss ship health
+        #Boss ship settings
         self.boss_ship_health = 500
-
+       
         self.initialize_dynamic_settings()
 
     def initialize_dynamic_settings(self):
