@@ -16,6 +16,7 @@ Welcome to Sloth In Space, where you embark on a cosmic adventure with a sloth a
 
 ## Screenshots
 
+
 ![Sloth_In_Space](images/Sloth_In_Space.png)
 ![Sloth_In_Space_Boss_Ship](images/Sloth_In_Space_Boss_Ship.png)
 
