@@ -1,5 +1,4 @@
 import sys
-from time import sleep
 import math
 import pygame
 import random
@@ -195,7 +194,7 @@ class Sloth_In_Space:
 
             # Stops spawning the asteroids and 
             # let the boss ship enter the screen every 10th level
-            if not self.asteroids and self.stats.level % 9 == 0:   
+            if not self.asteroids and self.stats.level % 3 == 0:   
                 self.boss_ship._enter_screen()
                 # Destroy existing bullets and create new fleet.
                 self.bullets.empty()
@@ -220,7 +219,7 @@ class Sloth_In_Space:
             col = pygame.sprite.spritecollideany(self.boss_ship, self.bullets)
             if col:
                 self.bullets.remove(col)
-                self.boss_ship.health -= 10
+                self.boss_ship.health -= 50
             
                 if self.boss_ship.health <= 0:
                     self.bullets.empty()
